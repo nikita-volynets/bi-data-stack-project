@@ -50,7 +50,7 @@ Each layer has a specific purpose, which makes the pipeline easier to maintain a
   - **Product/Other:** User engagement, funnel analysis, or other domain-specific tables.  
 - Example: `mart_sales__pipeline_summary`, `mart_marketing__channel_performance`.  
 
-## Folder Structure in dbt  
+### Folder Structure 
 
 ```plaintext
 models/
