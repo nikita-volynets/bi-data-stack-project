@@ -75,54 +75,74 @@ models/
 
 ### Testing & Data Validation
 
-Comprehensive data quality testing implemented across all model layers:
 
-**Built-in dbt Tests:**
-* `unique` and `not_null` tests on primary keys (customer_id, order_id, etc.)
-* `accepted_values` tests for categorical fields (customer_type: 'new' or 'returning')
-* Data integrity checks across all staging and mart models
+To ensure data quality and trust in the models, several types of tests were implemented in dbt:  
 
-**Custom Business Logic Tests:**
-* `dbt_utils.expression_is_true` for complex validations
-* Row count and referential integrity tests between layers
+### **1. Freshness Tests**  
+- Applied on key source tables to confirm data was updated on time (e.g., CRM, marketing, and product activity tables).  
+- Example: verifying that Salesforce opportunities or HubSpot contacts were refreshed daily.  
 
-**Source Data Validation:**
-* Freshness monitoring on raw tables with `loaded_at_field` configured
-* Source table schema tests defined in `__sources.yml`
+### **2. Built-in dbt Tests**  
+Standard schema tests were used to validate important columns:  
+- **`unique`** – ensured IDs (like `user_id`, `account_id`) were not duplicated.  
+- **`not_null`** – validated required fields (e.g., `email`, `created_at`).  
+- **`accepted_values`** – confirmed fields like status or stage only contained expected values.  
+- **`relationships`** – checked that foreign keys matched across related tables (e.g., `user_id` in events existed in the users table).  
 
+### **3. Custom Tests**  
+Custom SQL tests were added for business-specific rules:  
+- **Email validation:** confirmed emails followed proper formatting.  
+- **Date checks:** verified `created_at` was always earlier than `closed_at` for opportunities.  
+- **Pipeline logic:** flagged rows where opportunity stage was inconsistent with probability.  
 
-### Documentation
-
-Every model has detailed descriptions and column definitions.
-
+### **4. Package Tests**  
+Community packages extended testing capabilities:  
+- **`dbt_utils`** – used for advanced tests like `equal_rowcount` and `fewer_rows_than`.  
+- **`dbt_expectations`** – applied for granular checks, such as value distributions and percentage of nulls in a column. 
 
 ## 5. Orchestration & Scheduling
 
-* **Daily Production Job:** Daily full refresh of the whole dbt project
+### **Airflow**  
+Airflow was used to orchestrate the overall pipeline. It defined the order of tasks, scheduled workflows, and monitored execution.  
+- **Scheduling:** Controlled when ingestion, transformations, and checks should run.  
+- **Dependencies:** Ensured dbt jobs only started after data ingestion finished.  
+- **Monitoring & Alerts:** Provided visibility into workflow health and sent notifications on failures.  
+- **Retries:** Automatically retried failed tasks to improve reliability.  
+
+### **dbt Cloud**  
+dbt Cloud was used to run transformations.  
+- **Job scheduling:** dbt models were grouped into jobs (e.g., staging, marts) and executed inside dbt Cloud.  
+- **Testing & Documentation:** dbt jobs also ran schema tests and refreshed documentation as part of scheduled runs.  
+- **Integration with Airflow:** Airflow triggered dbt Cloud jobs via API, making sure transformations happened after ingestion and before dashboards refreshed.  
+
+### **Workflow Example**  
+1. **Fivetran sync** ingested new data into Snowflake.  
+2. **Airflow** detected completion and triggered the **dbt Cloud job**.  
+3. **dbt Cloud** ran transformations and data tests.  
+4. After dbt jobs succeeded, **Airflow** triggered downstream tasks, such as dashboard refreshes in Sigma.  
+
+### **Why This Setup Was Chosen**  
+- dbt Cloud provided a managed, reliable way to run transformations with minimal setup.  
+- Airflow gave flexibility to orchestrate across multiple tools (Fivetran, dbt Cloud, Sigma) in one place.  
+- This combination kept transformations scalable while ensuring the whole pipeline stayed reliable and transparent.  
 
 
 ## 6. Environments and CI/CD
 
-We use a multi-environment setup to ensure safe and collaborative development:
+### **Environments**  
+- **Development (Dev):** Used for building and testing new models. Changes were run against a development schema/database to avoid breaking production.  
+- **Production (Prod):** Hosted the stable models consumed by stakeholders and dashboards. Only tested and reviewed changes were deployed here.  
+- **Separation of Environments:** This setup ensured that experimental work never impacted business-critical reports.  
 
-- **Raw Data Source**  
-  All raw data is stored in the **`raw_jaffle_shop`** dataset.
+### **CI/CD with dbt Cloud & GitHub**  
+- **Version Control:** All dbt code was stored in GitHub, with changes proposed through pull requests.  
+- **Automated Testing:** Each pull request triggered dbt Cloud jobs (or GitHub Actions) to run tests and validate models before merging.  
+- **Branching Strategy:** Feature branches were used for development, then merged into `main` only after tests passed.  
+- **Deployment:** Once merged, dbt Cloud automatically deployed changes to the production environment.  
 
-- **Development Environments**  
-  Each developer has a personal BigQuery dataset (e.g., `dbt_nvolynets`) where they can:
-  - Test changes  
-  - Run models  
-  - Validate results  
-  These environments are connected to the developer's dbt Cloud development workspace.
-
-- **Pull Request (PR) Workflow**  
-  When a developer is ready to propose changes to production:
-  - They must open a **Pull Request** in GitHub.
-  - A **PR Template** is provided and must be filled in with context, purpose, and testing evidence.
-
-- **CI/CD Automation**
-  - **CI Job**: Runs automatically when a PR is created. It builds only the modified models to validate changes.
-  - **CD Job**: Runs after a PR is merged to `main`, deploying updated models to the **production** environment.
-
-This workflow ensures code quality, enables team collaboration, and maintains a reliable production environment.
+### **Why This Setup Was Chosen**  
+- **Reliability:** Prevented untested code from reaching production.  
+- **Collaboration:** Made it easy for multiple contributors to work on the project simultaneously.  
+- **Transparency:** Every change was reviewed and tested, leaving a clear history of updates.  
+- **Scalability:** Provided a foundation for adding more complex workflows as the team and data platform grew. 
 
