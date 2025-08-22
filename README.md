@@ -19,11 +19,11 @@
 - **Sigma** for dashboard creation
 - **Airflow** for orchestration
 
-## 2. Ingestion
+## 3. Ingestion
 
 Fivetran was used to automatically pull data from different source into Snowflake. We chose Fivetran because it allowed us to set up pipelines in hours instead of weeks, reduced maintenance work, and ensured reliable, up-to-date data without the team having to manage custom ETL code.
 
-## 3. DBT project
+## 4. DBT project
 
 ### Layers
 
@@ -37,7 +37,7 @@ The project is organized into clear layers to keep the data pipeline structured 
 
 **3. Marts:** The final layer, with clean and user-ready tables.
 
-## 4. Testing & Data Validation
+### Testing & Data Validation
 
 Comprehensive data quality testing implemented across all model layers:
 
@@ -55,17 +55,17 @@ Comprehensive data quality testing implemented across all model layers:
 * Source table schema tests defined in `__sources.yml`
 
 
-## 5. Documentation
+### Documentation
 
 Every model has detailed descriptions and column definitions.
 
 
-## 6. Orchestration & Scheduling
+## 5. Orchestration & Scheduling
 
 * **Daily Production Job:** Daily full refresh of the whole dbt project
 
 
-## 7. Environments and CI/CD
+## 6. Environments and CI/CD
 
 We use a multi-environment setup to ensure safe and collaborative development:
 
