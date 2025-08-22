@@ -25,17 +25,54 @@ Fivetran was used to automatically pull data from different source into Snowflak
 
 ## 4. DBT project
 
-### Layers
+Each layer has a specific purpose, which makes the pipeline easier to maintain and understand.  
 
-The project is organized into clear layers to keep the data pipeline structured and easy to maintain:
+### **1. Raw**  
+- Contains all raw data as it lands from Fivetran into Snowflake.  
+- No changes are made here—it’s a direct copy of the source systems.  
+- Example schema: `raw.salesforce_accounts`, `raw.hubspot_contacts`.  
 
-- **Raw:** Contains all raw data from our sources, exactly as ingested.
+### **2. Staging**  
+- Cleans and standardizes raw tables.  
+- Tasks include: renaming columns, fixing data types, handling nulls, and selecting only needed fields.  
+- Each source table has a matching staging model, usually with a `stg_` prefix.  
+- Example: `stg_salesforce__accounts`, `stg_hubspot__contacts`.  
 
-- **Sources:** Selects only the tables we actually need from the Raw layer. Here we make very light changes, like renaming columns, but otherwise the data stays close to the original. These tables act as the starting point for transformations.
+### **3. Intermediate**  
+- Combines data from staging models to create more useful datasets.  
+- This layer is where joins, calculations, and logic across systems happen (e.g., combining CRM + product usage data).  
+- Example: `int__customer_activity`, `int__marketing_performance`.  
 
-- **Transform:** This is where the main data cleaning and restructuring happens—joining tables, applying calculations, and shaping the data for analysis.
+### **4. Marts**  
+- Final layer with business-friendly tables, designed for reporting and dashboards.  
+- Organized into subfolders for different audiences:  
+  - **Business:** Metrics for Sales, Marketing, Finance, etc.  
+  - **Product/Other:** User engagement, funnel analysis, or other domain-specific tables.  
+- Example: `mart_sales__pipeline_summary`, `mart_marketing__channel_performance`.  
 
-- **Marts:** The final layer, with clean and user-ready tables.
+## Folder Structure in dbt  
+
+```plaintext
+models/
+  raw/               # (optional if you define sources in yml)
+  staging/
+    salesforce/
+      stg_salesforce__accounts.sql
+      stg_salesforce__opportunities.sql
+    hubspot/
+      stg_hubspot__contacts.sql
+  intermediate/
+    int__customer_activity.sql
+    int__marketing_performance.sql
+  marts/
+    sales/
+      mart_sales__pipeline_summary.sql
+    marketing/
+      mart_marketing__channel_performance.sql
+    product/
+      mart_product__usage_summary.sql
+```
+
 
 ### Testing & Data Validation
 
