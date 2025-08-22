@@ -21,23 +21,21 @@
 
 ## 2. Ingestion
 
+Fivetran was used to automatically pull data from different source into Snowflake. We chose Fivetran because it allowed us to set up pipelines in hours instead of weeks, reduced maintenance work, and ensured reliable, up-to-date data without the team having to manage custom ETL code.
+
 ## 3. DBT project
 
-### dbt Models
+### Layers
 
-The project consists of several layers:
+The project is organized into clear layers to keep the data pipeline structured and easy to maintain:
 
-**0. Raw:** These tables are the starting point. Small adjustments are made, such as changing the names of columns, but not much else.
+**0. Raw:** Contains all raw data from our sources, exactly as ingested.
 
-**1. Sources:** These tables are the starting point. Small adjustments are made, such as changing the names of columns, but not much else.
+**1. Sources:** Selects only the tables we actually need from the Raw layer. Here we make very light changes, like renaming columns, but otherwise the data stays close to the original. These tables act as the starting point for transformations.
 
-**2. Transform:** In this step, the data from the "Sources" goes through more complex changes. It includes combining tables, performing calculations, and organizing the data. It is divided into two parts:
-- Raptors: This section focuses on data specifically about the Toronto Raptors team.
-- Teams: This section deals with data about all teams.
+**2. Transform:** This is where the main data cleaning and restructuring happens—joining tables, applying calculations, and shaping the data for analysis.
 
-**3. Marts:** These tables are the finished product, ready for people to use. They come in two sub-folders:
-- Business: Aimed at professionals who need to analyze data or make visualizations and dashboards, like business stakeholders or data analysts.
-- Fans: Designed for NBA fans who want to explore and analyze the data for fun.
+**3. Marts:** The final layer, with clean and user-ready tables.
 
 ## 4. Testing & Data Validation
 
