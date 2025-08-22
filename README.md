@@ -115,34 +115,15 @@ dbt Cloud was used to run transformations.
 - **Testing & Documentation:** dbt jobs also ran schema tests and refreshed documentation as part of scheduled runs.  
 - **Integration with Airflow:** Airflow triggered dbt Cloud jobs via API, making sure transformations happened after ingestion and before dashboards refreshed.  
 
-### **Workflow Example**  
-1. **Fivetran sync** ingested new data into Snowflake.  
-2. **Airflow** detected completion and triggered the **dbt Cloud job**.  
-3. **dbt Cloud** ran transformations and data tests.  
-4. After dbt jobs succeeded, **Airflow** triggered downstream tasks, such as dashboard refreshes in Sigma.  
-
-### **Why This Setup Was Chosen**  
-- dbt Cloud provided a managed, reliable way to run transformations with minimal setup.  
-- Airflow gave flexibility to orchestrate across multiple tools (Fivetran, dbt Cloud, Sigma) in one place.  
-- This combination kept transformations scalable while ensuring the whole pipeline stayed reliable and transparent.  
-
-
 ## 6. Environments and CI/CD
 
 ### **Environments**  
-- **Development (Dev):** Used for building and testing new models. Changes were run against a development schema/database to avoid breaking production.  
-- **Production (Prod):** Hosted the stable models consumed by stakeholders and dashboards. Only tested and reviewed changes were deployed here.  
-- **Separation of Environments:** This setup ensured that experimental work never impacted business-critical reports.  
+The project used two main environments: **Dev** and **Prod**.  
+- **Production (Prod):** This is the stable environment that feeds dashboards and reports. Only trusted and tested models live here.  
+- **Development (Dev):** Each developer had their own dev environment (separate schema in Snowflake). This made it possible to test new models and run experiments without breaking production.  
 
-### **CI/CD with dbt Cloud & GitHub**  
-- **Version Control:** All dbt code was stored in GitHub, with changes proposed through pull requests.  
-- **Automated Testing:** Each pull request triggered dbt Cloud jobs (or GitHub Actions) to run tests and validate models before merging.  
-- **Branching Strategy:** Feature branches were used for development, then merged into `main` only after tests passed.  
-- **Deployment:** Once merged, dbt Cloud automatically deployed changes to the production environment.  
-
-### **Why This Setup Was Chosen**  
-- **Reliability:** Prevented untested code from reaching production.  
-- **Collaboration:** Made it easy for multiple contributors to work on the project simultaneously.  
-- **Transparency:** Every change was reviewed and tested, leaving a clear history of updates.  
-- **Scalability:** Provided a foundation for adding more complex workflows as the team and data platform grew. 
+### **CI/CD with dbt Cloud**  
+CI/CD was handled directly in **dbt Cloud**, integrated with GitHub.  
+- **CI Job (Continuous Integration):** Every pull request triggered a dbt job in the developer’s environment. It ran tests, built models, and checked if everything worked before changes could be merged.  
+- **CD Job (Continuous Deployment):** After merging to `main`, another dbt Cloud job automatically ran in production. This deployed the changes and refreshed models used by dashboards.    
 
