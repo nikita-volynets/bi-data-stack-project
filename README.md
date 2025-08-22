@@ -54,7 +54,6 @@ Each layer has a specific purpose, which makes the pipeline easier to maintain a
 
 ```plaintext
 models/
-  raw/               # (optional if you define sources in yml)
   staging/
     salesforce/
       stg_salesforce__accounts.sql
