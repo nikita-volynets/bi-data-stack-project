@@ -1,5 +1,12 @@
 # BI & Data Project
 
+## Table of Contents
+
+1. The architecture/design of the solution (high-level overview)
+2. Key decisions you made and why
+3. Code samples or data models (as long as you’re able to share them)
+4. Any challenges you ran into and how you solved them
+
 ## Data Architecture
 
 - [dbt](https://www.paradime.io/) for data transformations
