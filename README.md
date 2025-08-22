@@ -29,13 +29,13 @@ Fivetran was used to automatically pull data from different source into Snowflak
 
 The project is organized into clear layers to keep the data pipeline structured and easy to maintain:
 
-**0. Raw:** Contains all raw data from our sources, exactly as ingested.
+- **Raw:** Contains all raw data from our sources, exactly as ingested.
 
-**1. Sources:** Selects only the tables we actually need from the Raw layer. Here we make very light changes, like renaming columns, but otherwise the data stays close to the original. These tables act as the starting point for transformations.
+- **Sources:** Selects only the tables we actually need from the Raw layer. Here we make very light changes, like renaming columns, but otherwise the data stays close to the original. These tables act as the starting point for transformations.
 
-**2. Transform:** This is where the main data cleaning and restructuring happens—joining tables, applying calculations, and shaping the data for analysis.
+- **Transform:** This is where the main data cleaning and restructuring happens—joining tables, applying calculations, and shaping the data for analysis.
 
-**3. Marts:** The final layer, with clean and user-ready tables.
+- **Marts:** The final layer, with clean and user-ready tables.
 
 ### Testing & Data Validation
 
