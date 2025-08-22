@@ -1,12 +1,5 @@
 # BI & Data Project
 
-## Table of Contents
-
-1. The architecture/design of the solution (high-level overview)
-2. Key decisions you made and why
-3. Code samples or data models (as long as you’re able to share them)
-4. Any challenges you ran into and how you solved them
-
 ## 1. Architecture Diagram
 
 <img width="968" height="408" alt="image" src="https://github.com/user-attachments/assets/f9fd3569-5539-4540-abe4-07976615ede1" />
