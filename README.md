@@ -19,13 +19,15 @@
 - **Sigma** for dashboard creation
 - **Airflow** for orchestration
 
+## 2. Ingestion
+
 ## 3. DBT project
 
 ### dbt Models
 
-This project implements a **medallion architecture** (Bronze → Silver → Gold) with the following key layers:
+The project consists of several layers:
 
-The project consists of 3 layers:
+**0. Raw:** These tables are the starting point. Small adjustments are made, such as changing the names of columns, but not much else.
 
 **1. Sources:** These tables are the starting point. Small adjustments are made, such as changing the names of columns, but not much else.
 
